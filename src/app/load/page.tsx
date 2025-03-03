@@ -84,10 +84,10 @@ export default function LoadPage() {
       // サーバーアクションを呼び出してデータを保存
       const result = await saveJsonData(jsonData);
 
-      if (result.success) {
+      if (result.status === "success") {
         setSaveStatus("データが正常に保存されました。");
       } else {
-        throw new Error(result.error || "保存に失敗しました。");
+        throw new Error("保存に失敗しました。");
       }
     } catch (err) {
       console.error("Save error:", err);
