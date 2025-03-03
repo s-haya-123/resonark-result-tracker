@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 
 interface UserMenuProps {
   userName: string;
+  userId: string;
 }
 
-export function UserMenu({ userName }: UserMenuProps) {
+export function UserMenu({ userName, userId }: UserMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
 
@@ -29,7 +30,9 @@ export function UserMenu({ userName }: UserMenuProps) {
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         className="flex items-center space-x-1 bg-blue-50 px-3 py-2 rounded-md hover:bg-blue-100 transition-colors"
       >
-        <span className="font-medium">{userName}</span>
+        <span className="font-medium">
+          {userName}:{userId}
+        </span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className={`h-4 w-4 transition-transform ${

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserMenu } from "./UserMenu";
+import { UserMenu } from "@/app/UserMenu";
 
 interface NavigationProps {
   userName?: string;
+  userId?: string;
 }
 
-export function Navigation({ userName }: NavigationProps) {
+export function Navigation({ userName, userId }: NavigationProps) {
   const pathname = usePathname();
 
   // 登録ページでは表示しない
@@ -45,7 +46,7 @@ export function Navigation({ userName }: NavigationProps) {
       </ul>
 
       {/* ユーザーがログインしている場合はユーザーメニューを表示 */}
-      {userName && <UserMenu userName={userName} />}
+      {userName && userId && <UserMenu userName={userName} userId={userId} />}
     </nav>
   );
 }

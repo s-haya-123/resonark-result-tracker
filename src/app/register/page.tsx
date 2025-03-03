@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { registerUser } from "./actions";
+import { registerUser, loginUser } from "./actions";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
+  const [userId, setUserId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mode, setMode] = useState<"register" | "login">("register");
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim()) {
@@ -42,9 +44,62 @@ export default function RegisterPage() {
     }
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!userId.trim()) {
+      setError("IDを入力してください");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const result = await loginUser(userId);
+
+      if (result.success) {
+        // ログイン成功したらホームページにリダイレクト
+        router.push("/");
+      } else {
+        throw new Error(result.error || "ログインに失敗しました");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(
+        `ログイン中にエラーが発生しました: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="container mx-auto py-8 max-w-md">
-      <h1 className="text-2xl font-bold mb-6">ユーザー登録</h1>
+      <div className="flex justify-center mb-6 space-x-4">
+        <button
+          onClick={() => setMode("register")}
+          className={`px-4 py-2 rounded-md transition-colors ${
+            mode === "register"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
+          }`}
+        >
+          ユーザー登録
+        </button>
+        <button
+          onClick={() => setMode("login")}
+          className={`px-4 py-2 rounded-md transition-colors ${
+            mode === "login"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
+          }`}
+        >
+          ログイン
+        </button>
+      </div>
 
       {error && (
         <div className="p-4 mb-6 bg-red-50 border border-red-200 rounded-md text-red-600">
@@ -52,30 +107,57 @@ export default function RegisterPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-1">
-            ユーザー名
-          </label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="ユーザー名を入力"
-            disabled={isSubmitting}
-          />
-        </div>
+      {mode === "register" ? (
+        <form onSubmit={handleRegister} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium mb-1">
+              ユーザー名
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="ユーザー名を入力"
+              disabled={isSubmitting}
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "登録中..." : "登録"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "登録中..." : "登録"}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label htmlFor="userId" className="block text-sm font-medium mb-1">
+              ユーザーID
+            </label>
+            <input
+              id="userId"
+              type="text"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md"
+              placeholder="ユーザーIDを入力"
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "ログイン中..." : "ログイン"}
+          </button>
+        </form>
+      )}
     </div>
   );
 }
