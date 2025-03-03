@@ -22,6 +22,7 @@ model User {
 
 model ScoreResult {
   id        String   @id @default(uuid())
+  musicId   String  @default("")
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   title     String
@@ -30,6 +31,7 @@ model ScoreResult {
   tRate     Float
   state     Int
   platform  Int
+  worldId   String @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

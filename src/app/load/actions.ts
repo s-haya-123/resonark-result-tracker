@@ -13,6 +13,8 @@ type SaveResult = {
 // JSONデータの型定義
 interface ScoreItem {
   id: string;
+  musicId: string;
+  worldId: string;
   title: string;
   dName: string;
   score: number;
@@ -26,6 +28,22 @@ interface JsonData {
   userId?: string;
   items?: Record<string, ScoreItem | string | number>;
   [key: string]: unknown;
+}
+
+const parseItemKeyData = (key: string): {
+  worldId: string;
+  dataType: string;
+  dataId: string;
+} => {
+  const worldId = key.substring(0, 3);
+  const dataType = key.substring(3, 6);
+  const dataId = key.substring(6);
+
+  return {
+    worldId,
+    dataType,
+    dataId
+  };
 }
 
 export async function saveJsonData(data: JsonData): Promise<SaveResult> {
@@ -46,14 +64,19 @@ export async function saveJsonData(data: JsonData): Promise<SaveResult> {
     
     // 各スコアデータを保存
     for (const key in items) {
+      const {
+        worldId,
+      } = parseItemKeyData(key);
       const item = items[key];
       // 有効なスコアデータのみを処理
       if (item && typeof item === 'object' && item.title && item.dName) {
         await prisma.scoreResult.create({
           data: {
+            worldId,
             userId: user.id,
             title: item.title,
             dName: item.dName,
+            musicId: `${item.id}`,
             score: item.score || 0,
             tRate: item.tRate || 0,
             state: item.state || 0,
