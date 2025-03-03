@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { NavigationWrapper } from "@/app/NavigationWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,15 +18,16 @@ export const metadata: Metadata = {
   description: "resonark result tracker",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="p-10">
-        {children}
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="p-10 font-sans">
+        <NavigationWrapper />
+        <main>{children}</main>
       </body>
     </html>
   );

@@ -1,0 +1,90 @@
+"use server";
+
+import { PrismaClient } from "@prisma/client";
+import { cookies } from "next/headers";
+
+type RegisterResult = {
+  success: true;
+  userId: string;
+} | {
+  success: false;
+  error: string;
+};
+
+export async function registerUser(name: string): Promise<RegisterResult> {
+  const prisma = new PrismaClient();
+
+  try {
+    // 名前が空でないことを確認
+    if (!name.trim()) {
+      return {
+        success: false,
+        error: "ユーザー名を入力してください"
+      };
+    }
+
+    // 新しいユーザーを作成
+    const user = await prisma.user.create({
+      data: {
+        name: name.trim()
+      }
+    });
+
+    // ユーザーIDをクッキーに保存（7日間有効）
+    const cookieStore = await cookies();
+    cookieStore.set({
+      name: "userId",
+      value: user.id,
+      httpOnly: true,
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7日間
+      sameSite: "strict"
+    });
+
+    return {
+      success: true,
+      userId: user.id
+    };
+  } catch (error) {
+    console.error("Error registering user:", error);
+    return {
+      success: false,
+      error: "ユーザー登録に失敗しました"
+    };
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+export async function getCurrentUser() {
+  const prisma = new PrismaClient();
+  
+  try {
+    // クッキーからユーザーIDを取得
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
+    
+    if (!userId) {
+      return null;
+    }
+    
+    // ユーザーIDを使ってユーザー情報を取得
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    });
+    
+    return user;
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    return null;
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+export async function isUserLoggedIn(): Promise<boolean> {
+  const user = await getCurrentUser();
+  return user !== null;
+}
