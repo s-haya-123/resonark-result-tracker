@@ -1,9 +1,19 @@
-import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { getCurrentUser } from "./register/actions";
+import { getUserScoreResults } from "./actions";
 
 export default async function Home() {
   // 現在のユーザー情報を取得
   const user = await getCurrentUser();
+  // ユーザーのスコア結果を取得
+  const scoreResults = await getUserScoreResults();
 
   return (
     <div>
@@ -20,11 +30,64 @@ export default async function Home() {
         <TableHeader>
           <TableRow>
             <TableHead>タイトル</TableHead>
+            <TableHead>譜面名</TableHead>
             <TableHead>スコア</TableHead>
             <TableHead>tRate</TableHead>
+            <TableHead>状態</TableHead>
+            <TableHead>プラットフォーム</TableHead>
           </TableRow>
         </TableHeader>
+        <TableBody>
+          {scoreResults.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center py-4 text-gray-500">
+                スコアデータがありません
+              </TableCell>
+            </TableRow>
+          ) : (
+            scoreResults.map((result) => (
+              <TableRow key={result.id}>
+                <TableCell>{result.title}</TableCell>
+                <TableCell>{result.dName}</TableCell>
+                <TableCell>{result.score.toLocaleString()}</TableCell>
+                <TableCell>{result.tRate.toFixed(2)}%</TableCell>
+                <TableCell>{getStateText(result.state)}</TableCell>
+                <TableCell>{getPlatformText(result.platform)}</TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
       </Table>
     </div>
   );
+}
+
+// 状態を表示用のテキストに変換する関数
+function getStateText(state: number): string {
+  switch (state) {
+    case 0:
+      return "未クリア";
+    case 1:
+      return "クリア";
+    case 2:
+      return "フルコンボ";
+    case 3:
+      return "パーフェクト";
+    default:
+      return "不明";
+  }
+}
+
+// プラットフォームを表示用のテキストに変換する関数
+function getPlatformText(platform: number): string {
+  switch (platform) {
+    case 0:
+      return "アーケード";
+    case 1:
+      return "コンシューマ";
+    case 2:
+      return "モバイル";
+    default:
+      return "不明";
+  }
 }
