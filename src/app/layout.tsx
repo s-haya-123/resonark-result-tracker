@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default async function RootLayout({
             </div>
             {children}
             <Analytics />
+            <SpeedInsights />
           </SidebarInset>
         </SidebarProvider>
         <Toaster />
