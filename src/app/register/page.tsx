@@ -16,6 +16,10 @@ import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
+export const config = {
+  maxDuration: 30,
+};
+
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [userId, setUserId] = useState("");
