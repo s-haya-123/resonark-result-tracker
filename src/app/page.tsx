@@ -66,13 +66,17 @@ export default async function Home() {
 function getStateText(state: number): string {
   switch (state) {
     case 0:
-      return "未クリア";
-    case 1:
-      return "クリア";
-    case 2:
-      return "フルコンボ";
-    case 3:
-      return "パーフェクト";
+      return "未プレイ";
+    case 100:
+      return "失敗";
+    case 230:
+      return "通常クリア";
+    case 300:
+      return "Full Comboでクリア";
+    case 400:
+      return "All Perfectでクリア";
+    case 500:
+      return "All A-Perfectでクリア";
     default:
       return "不明";
   }
@@ -82,11 +86,15 @@ function getStateText(state: number): string {
 function getPlatformText(platform: number): string {
   switch (platform) {
     case 0:
-      return "アーケード";
+      return "VRChat PCVR";
     case 1:
-      return "コンシューマ";
+      return "VRChat PCDesktop";
     case 2:
-      return "モバイル";
+      return "VRChat QuestVR";
+    case 3:
+      return "VRChat Mobile";
+    case 4:
+      return "Debug User";
     default:
       return "不明";
   }
