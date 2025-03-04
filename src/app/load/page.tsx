@@ -216,7 +216,7 @@ export default function LoadPage() {
         <h2 className="text-xl font-semibold mb-3">
           エクスポートされたデータ詳細
         </h2>
-        <div>コピーしたデータを直接以下に張り付けても読み込めます</div>
+        <div>コピーしたデータを直接以下に貼り付けても読み込めます</div>
         <div className="p-4 bg-gray-50 border border-gray-200 rounded-md overflow-auto">
           <textarea
             className="w-full h-96 font-mono text-sm"
