@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NavigationWrapper } from "@/app/NavigationWrapper";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,9 +30,17 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="p-10 font-sans">
-        <NavigationWrapper />
-        <main>{children}</main>
+      <body className="font-sans">
+        <SidebarProvider>
+          <NavigationWrapper />
+          <SidebarInset className="p-10">
+            <div className="flex items-center mb-6">
+              <SidebarTrigger className="mr-4" />
+              <h1 className="text-2xl font-bold">Resonark Result Tracker</h1>
+            </div>
+            {children}
+          </SidebarInset>
+        </SidebarProvider>
       </body>
     </html>
   );

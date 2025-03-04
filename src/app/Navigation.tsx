@@ -2,7 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { HomeIcon } from "lucide-react";
+import { FileJsonIcon } from "@/components/icon/FileJsonIcon";
 import { UserMenu } from "@/app/UserMenu";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 
 interface NavigationProps {
   userName?: string;
@@ -18,35 +28,38 @@ export function Navigation({ userName, userId }: NavigationProps) {
   }
 
   const links = [
-    { href: "/", label: "ホーム" },
-    { href: "/load", label: "データ読み込み" },
+    { href: "/", label: "ホーム", icon: <HomeIcon /> },
+    { href: "/load", label: "データ読み込み", icon: <FileJsonIcon /> },
   ];
 
   return (
-    <nav className="mb-8 flex justify-between items-center">
-      <ul className="flex space-x-4">
-        {links.map((link) => {
-          const isActive = pathname === link.href;
+    <Sidebar collapsible="icon">
+      <SidebarContent className="py-5">
+        <SidebarMenu>
+          {links.map((link) => {
+            const isActive = pathname === link.href;
 
-          return (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                className={`px-3 py-2 rounded-md transition-colors ${
-                  isActive
-                    ? "bg-blue-100 text-blue-800 font-medium"
-                    : "hover:bg-gray-100"
-                }`}
-              >
-                {link.label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-
-      {/* ユーザーがログインしている場合はユーザーメニューを表示 */}
-      {userName && userId && <UserMenu userName={userName} userId={userId} />}
-    </nav>
+            return (
+              <SidebarMenuItem key={link.href}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={link.label}
+                  className="mb-3"
+                >
+                  <Link href={link.href}>
+                    {link.icon}
+                    <span>{link.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter>
+        {userName && userId && <UserMenu userName={userName} userId={userId} />}
+      </SidebarFooter>
+    </Sidebar>
   );
 }

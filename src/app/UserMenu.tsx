@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { LogOutIcon, UserIcon } from "lucide-react";
+import {
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenu,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 interface UserMenuProps {
   userName: string;
@@ -9,8 +15,9 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ userName, userId }: UserMenuProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   const handleLogout = async () => {
     // クッキーを削除するためにサーバーに要求を送信
@@ -25,42 +32,24 @@ export function UserMenu({ userName, userId }: UserMenuProps) {
   };
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="flex items-center space-x-1 bg-blue-50 px-3 py-2 rounded-md hover:bg-blue-100 transition-colors"
-      >
-        <span className="font-medium">
-          {userName}:{userId}
-        </span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className={`h-4 w-4 transition-transform ${
-            isMenuOpen ? "rotate-180" : ""
-          }`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
-
-      {isMenuOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-          <button
-            onClick={handleLogout}
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-          >
-            ログアウト
-          </button>
+    <div className="px-2">
+      {!isCollapsed && (
+        <div className="flex items-center gap-2 p-2 mb-2 rounded-md bg-sidebar-accent">
+          <UserIcon className="h-5 w-5" />
+          <span className="font-medium text-sm truncate">
+            {userName}:{userId}
+          </span>
         </div>
       )}
+
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton onClick={handleLogout} tooltip="ログアウト">
+            <LogOutIcon className="h-4 w-4" />
+            <span>ログアウト</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
     </div>
   );
 }
