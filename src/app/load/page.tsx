@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { FileJsonIcon } from "@/components/icon/FileJsonIcon";
 import { saveJsonData } from "./actions";
+import { Button } from "@/components/ui/button";
 
 // JSON データ管理用のカスタムフック
 const useJsonData = () => {
@@ -226,13 +227,12 @@ export default function LoadPage() {
         </div>
 
         <div className="mt-4 flex justify-between items-center">
-          <button
+          <Button
             onClick={handleSave}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             disabled={!jsonData || jsonText.trim() === ""}
           >
             保存
-          </button>
+          </Button>
 
           {saveStatus && (
             <div className="p-2 bg-green-50 border border-green-200 rounded-md text-green-600">

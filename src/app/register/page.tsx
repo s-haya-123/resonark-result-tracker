@@ -97,26 +97,18 @@ export default function RegisterPage() {
   return (
     <div className="container mx-auto py-8 max-w-md">
       <div className="flex justify-center mb-6 space-x-4">
-        <button
+        <Button
           onClick={() => setMode("register")}
-          className={`px-4 py-2 rounded-md transition-colors ${
-            mode === "register"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 hover:bg-gray-300"
-          }`}
+          variant={mode === "register" ? "default" : "outline"}
         >
           ユーザー登録
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => setMode("login")}
-          className={`px-4 py-2 rounded-md transition-colors ${
-            mode === "login"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 hover:bg-gray-300"
-          }`}
+          variant={mode === "login" ? "default" : "outline"}
         >
           ログイン
-        </button>
+        </Button>
       </div>
 
       {error && (
@@ -142,13 +134,9 @@ export default function RegisterPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "登録中..." : "登録"}
-          </button>
+          </Button>
         </form>
       ) : (
         <form onSubmit={handleLogin} className="space-y-4">
@@ -167,13 +155,9 @@ export default function RegisterPage() {
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-            disabled={isSubmitting}
-          >
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "ログイン中..." : "ログイン"}
-          </button>
+          </Button>
         </form>
       )}
 
