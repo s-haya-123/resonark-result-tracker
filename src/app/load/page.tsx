@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { FileJsonIcon } from "@/components/icon/FileJsonIcon";
 import { saveJsonData } from "./actions";
 
-export default function LoadPage() {
+// JSON データ管理用のカスタムフック
+const useJsonData = () => {
   const [jsonData, setJsonData] = useState<Record<string, unknown> | null>(
     null
   );
@@ -13,63 +14,128 @@ export default function LoadPage() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const resetError = () => setError(null);
+  const resetSaveStatus = () => setSaveStatus(null);
+  const resetAll = () => {
+    setJsonData(null);
+    setJsonText("");
     setError(null);
     setSaveStatus(null);
+  };
 
-    if (!file) {
-      return;
-    }
+  return {
+    jsonData,
+    setJsonData,
+    jsonText,
+    setJsonText,
+    error,
+    setError,
+    fileName,
+    setFileName,
+    saveStatus,
+    setSaveStatus,
+    resetError,
+    resetSaveStatus,
+    resetAll,
+  };
+};
 
-    if (file.type !== "application/json" && !file.name.endsWith(".json")) {
-      setError("選択されたファイルはJSONファイルではありません。");
-      return;
-    }
+// ファイル選択処理用のカスタムフック
+const useFileHandler = ({
+  setJsonData,
+  setJsonText,
+  setError,
+  setFileName,
+  resetError,
+  resetSaveStatus,
+}: ReturnType<typeof useJsonData>) => {
+  const handleFileChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      resetError();
+      resetSaveStatus();
 
-    setFileName(file.name);
+      if (!file) {
+        return;
+      }
 
-    const reader = new FileReader();
+      if (file.type !== "application/json" && !file.name.endsWith(".json")) {
+        setError("選択されたファイルはJSONファイルではありません。");
+        return;
+      }
 
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-        const parsedData = JSON.parse(content);
-        setJsonData(parsedData);
-        setJsonText(JSON.stringify(parsedData, null, 2));
-      } catch (err: unknown) {
-        console.error("JSON parse error:", err);
-        setError(
-          "JSONの解析に失敗しました。ファイルが正しいJSON形式であることを確認してください。"
-        );
+      setFileName(file.name);
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
+          const parsedData = JSON.parse(content);
+          setJsonData(parsedData);
+          setJsonText(JSON.stringify(parsedData, null, 2));
+        } catch (err: unknown) {
+          console.error("JSON parse error:", err);
+          setError(
+            "JSONの解析に失敗しました。ファイルが正しいJSON形式であることを確認してください。"
+          );
+          setJsonData(null);
+          setJsonText("");
+        }
+      };
+
+      reader.onerror = () => {
+        setError("ファイルの読み込み中にエラーが発生しました。");
         setJsonData(null);
         setJsonText("");
+      };
+
+      reader.readAsText(file);
+    },
+    [
+      setError,
+      setFileName,
+      setJsonData,
+      setJsonText,
+      resetError,
+      resetSaveStatus,
+    ]
+  );
+
+  return { handleFileChange };
+};
+
+// テキスト編集処理用のカスタムフック
+const useTextHandler = ({
+  setJsonData,
+  setJsonText,
+  setError,
+  setSaveStatus,
+}: ReturnType<typeof useJsonData>) => {
+  const handleTextChange = useCallback(
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const text = event.target.value;
+      setJsonText(text);
+      setSaveStatus(null);
+
+      try {
+        const parsedData = JSON.parse(text);
+        setJsonData(parsedData);
+        setError(null);
+      } catch {
+        setError("JSONの形式が正しくありません。");
+        // Don't clear jsonData here to allow for temporary invalid JSON during editing
       }
-    };
+    },
+    [setError, setJsonData, setJsonText, setSaveStatus]
+  );
 
-    reader.onerror = () => {
-      setError("ファイルの読み込み中にエラーが発生しました。");
-      setJsonData(null);
-      setJsonText("");
-    };
+  return { handleTextChange };
+};
 
-    reader.readAsText(file);
-  };
-
-  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = event.target.value;
-    setJsonText(text);
-    setSaveStatus(null);
-
-    try {
-      const parsedData = JSON.parse(text);
-      setJsonData(parsedData);
-      setError(null);
-    } catch {
-      setError("JSONの形式が正しくありません。");
-      // Don't clear jsonData here to allow for temporary invalid JSON during editing
-    }
-  };
+// 保存処理用のカスタムフック
+const useSaveHandler = (jsonState: ReturnType<typeof useJsonData>) => {
+  const { jsonData, setError, setSaveStatus } = jsonState;
 
   const handleSave = async () => {
     if (!jsonData) {
@@ -99,6 +165,17 @@ export default function LoadPage() {
       setSaveStatus(null);
     }
   };
+
+  return { handleSave };
+};
+
+export default function LoadPage() {
+  const jsonState = useJsonData();
+  const { handleFileChange } = useFileHandler(jsonState);
+  const { handleTextChange } = useTextHandler(jsonState);
+  const { handleSave } = useSaveHandler(jsonState);
+
+  const { jsonData, jsonText, error, fileName, saveStatus } = jsonState;
 
   return (
     <div className="container mx-auto py-8">
