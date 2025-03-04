@@ -1,27 +1,18 @@
+import { Suspense } from "react";
 import { getCurrentUser } from "./register/actions";
-import { getUserScoreResults } from "./actions";
-import { sanitizeHtml } from "@/lib/utils";
-import SortableTable from "@/components/SortableTable";
+import HomeContent from "./HomeContent";
+import Loading from "./loading";
+import { getUserScoreResults } from "./getUserScoreResults";
 
 export default async function Home() {
-  // 現在のユーザー情報を取得
+  // 現在のユーザー情報を取得（サーバーサイド）
   const user = await getCurrentUser();
-  // ユーザーのスコア結果を取得
-  const scoreResults = await getUserScoreResults();
+  // useフックを使用してスコア結果を取得
+  const scoreResultsPromise = getUserScoreResults();
 
   return (
-    <div>
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">スコア一覧</h1>
-        {user && (
-          <div className="text-sm bg-blue-50 p-2 rounded-md">
-            ログインユーザー:{" "}
-            <span className="font-medium">{sanitizeHtml(user.name)}</span>
-          </div>
-        )}
-      </div>
-
-      <SortableTable scoreResults={scoreResults} />
-    </div>
+    <Suspense fallback={<Loading />}>
+      <HomeContent user={user} scoreResultsPromise={scoreResultsPromise} />
+    </Suspense>
   );
 }
