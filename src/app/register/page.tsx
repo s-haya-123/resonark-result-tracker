@@ -3,6 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { registerUser, loginUser } from "./actions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -10,6 +19,8 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mode, setMode] = useState<"register" | "login">("register");
+  const [showRegisterDialog, setShowRegisterDialog] = useState(false);
+  const [newUserId, setNewUserId] = useState("");
   const router = useRouter();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -27,8 +38,9 @@ export default function RegisterPage() {
       const result = await registerUser(name);
 
       if (result.success) {
-        // 登録成功したらホームページにリダイレクト
-        router.push("/");
+        // 登録成功したらダイアログを表示
+        setNewUserId(result.userId);
+        setShowRegisterDialog(true);
       } else {
         throw new Error(result.error || "ユーザー登録に失敗しました");
       }
@@ -42,6 +54,12 @@ export default function RegisterPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleDialogConfirm = () => {
+    setShowRegisterDialog(false);
+    // ダイアログを閉じた後にホームページにリダイレクト
+    router.push("/");
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -158,6 +176,22 @@ export default function RegisterPage() {
           </button>
         </form>
       )}
+
+      <Dialog open={showRegisterDialog} onOpenChange={setShowRegisterDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>登録完了</DialogTitle>
+            <DialogDescription>
+              登録が完了しました。このIDは同じデータを再度閲覧する際に必要になります。
+              <br />
+              あなたのID: <strong>{newUserId}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={handleDialogConfirm}>確認</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
