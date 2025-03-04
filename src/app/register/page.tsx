@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -96,19 +97,22 @@ export default function RegisterPage() {
 
   return (
     <div className="container mx-auto py-8 max-w-md">
-      <div className="flex justify-center mb-6 space-x-4">
-        <Button
-          onClick={() => setMode("register")}
-          variant={mode === "register" ? "default" : "outline"}
+      <div className="flex justify-center mb-6">
+        <ToggleGroup
+          type="single"
+          value={mode}
+          onValueChange={(value) => {
+            if (value) setMode(value as "register" | "login");
+          }}
+          variant="outline"
         >
-          ユーザー登録
-        </Button>
-        <Button
-          onClick={() => setMode("login")}
-          variant={mode === "login" ? "default" : "outline"}
-        >
-          ログイン
-        </Button>
+          <ToggleGroupItem value="register" className="px-4 py-2">
+            ユーザー登録
+          </ToggleGroupItem>
+          <ToggleGroupItem value="login" className="px-4 py-2">
+            ログイン
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       {error && (
