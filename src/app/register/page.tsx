@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -97,73 +98,88 @@ export default function RegisterPage() {
 
   return (
     <div className="container mx-auto py-8 max-w-md">
-      <div className="flex justify-center mb-6">
-        <ToggleGroup
-          type="single"
-          value={mode}
-          onValueChange={(value) => {
-            if (value) setMode(value as "register" | "login");
-          }}
-          variant="outline"
-        >
-          <ToggleGroupItem value="register" className="px-4 py-2">
-            ユーザー登録
-          </ToggleGroupItem>
-          <ToggleGroupItem value="login" className="px-4 py-2">
-            ログイン
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-
-      {error && (
-        <div className="p-4 mb-6 bg-red-50 border border-red-200 rounded-md text-red-600">
-          {error}
-        </div>
-      )}
-
-      {mode === "register" ? (
-        <form onSubmit={handleRegister} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-1">
-              ユーザー名
-            </label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              placeholder="ユーザー名を入力"
-              disabled={isSubmitting}
-            />
+      <Card>
+        <CardHeader>
+          <div className="flex justify-center mb-4">
+            <ToggleGroup
+              type="single"
+              value={mode}
+              onValueChange={(value) => {
+                if (value) setMode(value as "register" | "login");
+              }}
+              variant="outline"
+            >
+              <ToggleGroupItem value="register" className="px-4 py-2">
+                ユーザー登録
+              </ToggleGroupItem>
+              <ToggleGroupItem value="login" className="px-4 py-2">
+                ログイン
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "登録中..." : "登録"}
-          </Button>
-        </form>
-      ) : (
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label htmlFor="userId" className="block text-sm font-medium mb-1">
-              ユーザーID
-            </label>
-            <input
-              id="userId"
-              type="text"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              placeholder="ユーザーIDを入力"
-              disabled={isSubmitting}
-            />
-          </div>
+          <h2 className="text-xl font-semibold text-center">
+            {mode === "register" ? "ユーザー登録" : "ログイン"}
+          </h2>
+          {error && (
+            <div className="p-4 mt-2 bg-red-50 border border-red-200 rounded-md text-red-600">
+              {error}
+            </div>
+          )}
+        </CardHeader>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "ログイン中..." : "ログイン"}
-          </Button>
-        </form>
-      )}
+        <CardContent>
+          {mode === "register" ? (
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium mb-1"
+                >
+                  ユーザー名
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder="ユーザー名を入力"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "登録中..." : "登録"}
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="userId"
+                  className="block text-sm font-medium mb-1"
+                >
+                  ユーザーID
+                </label>
+                <input
+                  id="userId"
+                  type="text"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder="ユーザーIDを入力"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "ログイン中..." : "ログイン"}
+              </Button>
+            </form>
+          )}
+        </CardContent>
+      </Card>
 
       <Dialog open={showRegisterDialog} onOpenChange={setShowRegisterDialog}>
         <DialogContent>
