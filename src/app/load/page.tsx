@@ -179,7 +179,7 @@ export default function LoadPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">JSONファイルローダー</h1>
+      <h1 className="text-2xl font-bold mb-6">Exportされたデータ読み込み</h1>
 
       <div className="mb-8">
         <label
@@ -189,12 +189,10 @@ export default function LoadPage() {
           <div className="flex flex-col items-center justify-center gap-2">
             <FileJsonIcon className="mb-2" />
             <span className="text-sm font-medium">
-              {fileName
-                ? fileName
-                : "JSONファイルを選択またはドラッグ&ドロップ"}
+              {fileName ? fileName : "ファイルを選択またはドラッグ&ドロップ"}
             </span>
             <span className="text-xs text-gray-500">
-              .json形式のファイルのみ
+              .エクスポートされたデータを保存したファイルを選択
             </span>
           </div>
           <input
@@ -213,35 +211,36 @@ export default function LoadPage() {
         </div>
       )}
 
-      {jsonData && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-3">JSONデータ</h2>
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-md overflow-auto">
-            <textarea
-              className="w-full h-96 font-mono text-sm"
-              value={jsonText}
-              onChange={handleTextChange}
-              spellCheck={false}
-            />
-          </div>
-
-          <div className="mt-4 flex justify-between items-center">
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              disabled={!jsonData}
-            >
-              保存
-            </button>
-
-            {saveStatus && (
-              <div className="p-2 bg-green-50 border border-green-200 rounded-md text-green-600">
-                {saveStatus}
-              </div>
-            )}
-          </div>
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold mb-3">
+          エクスポートされたデータ詳細
+        </h2>
+        <div>コピーしたデータを直接以下に張り付けても読み込めます</div>
+        <div className="p-4 bg-gray-50 border border-gray-200 rounded-md overflow-auto">
+          <textarea
+            className="w-full h-96 font-mono text-sm"
+            value={jsonText}
+            onChange={handleTextChange}
+            spellCheck={false}
+          />
         </div>
-      )}
+
+        <div className="mt-4 flex justify-between items-center">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            disabled={!jsonData || jsonText.trim() === ""}
+          >
+            保存
+          </button>
+
+          {saveStatus && (
+            <div className="p-2 bg-green-50 border border-green-200 rounded-md text-green-600">
+              {saveStatus}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
