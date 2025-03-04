@@ -1,10 +1,10 @@
 "use server";
 
-import { PrismaClient, ScoreResult } from "@prisma/client";
+import { ScoreResult } from "@prisma/client";
 import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
 
 export async function getUserScoreResults(): Promise<ScoreResult[]> {
-  const prisma = new PrismaClient();
   
   try {
     // クッキーからユーザーIDを取得
@@ -16,13 +16,16 @@ export async function getUserScoreResults(): Promise<ScoreResult[]> {
     }
     
     // ユーザーIDを使ってスコア結果を取得
-    // DISTINCT ON を使用して各musicIdごとに最新の更新日時のレコードのみを取得
-    const scoreResults = await prisma.$queryRaw<ScoreResult[]>`
-      SELECT DISTINCT ON ("musicId") *
-      FROM "ScoreResult"
-      WHERE "userId" = ${userId}
-      ORDER BY "musicId", "updatedAt" DESC
-    `;
+    // SQL Injectionを防ぐためにPrismaのクエリビルダーを使用
+    const scoreResults = await prisma.scoreResult.findMany({
+      where: {
+        userId: userId
+      },
+      orderBy: {
+        updatedAt: 'desc'
+      },
+      distinct: ['musicId'],
+    });
     
     // 結果を更新日時の降順で並び替え
     return scoreResults.sort((a, b) => 
@@ -32,7 +35,5 @@ export async function getUserScoreResults(): Promise<ScoreResult[]> {
   } catch (error) {
     console.error("Error getting user score results:", error);
     return [];
-  } finally {
-    await prisma.$disconnect();
   }
 }

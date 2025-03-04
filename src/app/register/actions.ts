@@ -1,7 +1,7 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
 import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
 
 type RegisterResult = {
   success: true;
@@ -21,8 +21,6 @@ type LoginResult = {
 };
 
 export async function loginUser(userId: string): Promise<LoginResult> {
-  const prisma = new PrismaClient();
-
   try {
     // IDが空でないことを確認
     if (!userId.trim()) {
@@ -68,14 +66,10 @@ export async function loginUser(userId: string): Promise<LoginResult> {
       success: false,
       error: "ログインに失敗しました"
     };
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 export async function registerUser(name: string): Promise<RegisterResult> {
-  const prisma = new PrismaClient();
-
   try {
     // 名前が空でないことを確認
     if (!name.trim()) {
@@ -113,14 +107,10 @@ export async function registerUser(name: string): Promise<RegisterResult> {
       success: false,
       error: "ユーザー登録に失敗しました"
     };
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
 export async function getCurrentUser() {
-  const prisma = new PrismaClient();
-  
   try {
     // クッキーからユーザーIDを取得
     const cookieStore = await cookies();
@@ -141,8 +131,6 @@ export async function getCurrentUser() {
   } catch (error) {
     console.error("Error getting current user:", error);
     return null;
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

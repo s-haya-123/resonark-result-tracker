@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { registerUser, loginUser } from "./actions";
+import { sanitizeHtml } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -188,7 +189,7 @@ export default function RegisterPage() {
             <DialogDescription>
               登録が完了しました。このIDは同じデータを再度閲覧する際に必要になります。
               <br />
-              あなたのID: <strong>{newUserId}</strong>
+              あなたのID: <strong>{sanitizeHtml(newUserId)}</strong>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

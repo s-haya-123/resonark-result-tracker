@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { getCurrentUser } from "./register/actions";
 import { getUserScoreResults } from "./actions";
+import { sanitizeHtml } from "@/lib/utils";
 
 export default async function Home() {
   // 現在のユーザー情報を取得
@@ -21,7 +22,8 @@ export default async function Home() {
         <h1 className="text-2xl font-bold">スコア一覧</h1>
         {user && (
           <div className="text-sm bg-blue-50 p-2 rounded-md">
-            ログインユーザー: <span className="font-medium">{user.name}</span>
+            ログインユーザー:{" "}
+            <span className="font-medium">{sanitizeHtml(user.name)}</span>
           </div>
         )}
       </div>
@@ -47,8 +49,8 @@ export default async function Home() {
           ) : (
             scoreResults.map((result) => (
               <TableRow key={result.id}>
-                <TableCell>{result.title}</TableCell>
-                <TableCell>{result.dName}</TableCell>
+                <TableCell>{sanitizeHtml(result.title)}</TableCell>
+                <TableCell>{sanitizeHtml(result.dName)}</TableCell>
                 <TableCell>{result.score.toLocaleString()}</TableCell>
                 <TableCell>{result.tRate.toFixed(2)}%</TableCell>
                 <TableCell>{getStateText(result.state)}</TableCell>

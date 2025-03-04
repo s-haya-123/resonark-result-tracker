@@ -1,7 +1,8 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
 import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import { sanitizeHtml } from "@/lib/utils";
 
 type SaveResult = {
     status: 'success'
@@ -35,6 +36,16 @@ const parseItemKeyData = (key: string): {
   dataType: string;
   dataId: string;
 } => {
+  // キーの形式を検証（セキュリティ対策）
+  if (!key || typeof key !== 'string' || key.length < 7) {
+    return {
+      worldId: '',
+      dataType: '',
+      dataId: ''
+    };
+  }
+  
+  // 安全に部分文字列を抽出
   const worldId = key.substring(0, 3);
   const dataType = key.substring(3, 6);
   const dataId = key.substring(6);
@@ -47,8 +58,6 @@ const parseItemKeyData = (key: string): {
 }
 
 export async function saveJsonData(data: JsonData): Promise<SaveResult> {
-  const prisma = new PrismaClient();
-
   try {
     const items = data.items || {};
     
@@ -70,17 +79,28 @@ export async function saveJsonData(data: JsonData): Promise<SaveResult> {
       const item = items[key];
       // 有効なスコアデータのみを処理
       if (item && typeof item === 'object' && item.title && item.dName) {
+        // XSS対策のためにテキストデータをサニタイズ
+        const sanitizedTitle = sanitizeHtml(String(item.title));
+        const sanitizedDName = sanitizeHtml(String(item.dName));
+        const sanitizedMusicId = sanitizeHtml(String(item.id || ''));
+        
+        // 数値データの検証
+        const score = typeof item.score === 'number' ? item.score : 0;
+        const tRate = typeof item.tRate === 'number' ? item.tRate : 0;
+        const state = typeof item.state === 'number' ? item.state : 0;
+        const platform = typeof item.platform === 'number' ? item.platform : 0;
+        
         await prisma.scoreResult.create({
           data: {
             worldId,
             userId: user.id,
-            title: item.title,
-            dName: item.dName,
-            musicId: `${item.id}`,
-            score: item.score || 0,
-            tRate: item.tRate || 0,
-            state: item.state || 0,
-            platform: item.platform || 0
+            title: sanitizedTitle,
+            dName: sanitizedDName,
+            musicId: sanitizedMusicId,
+            score: score,
+            tRate: tRate,
+            state: state,
+            platform: platform
           }
         });
       }
@@ -93,7 +113,5 @@ export async function saveJsonData(data: JsonData): Promise<SaveResult> {
       status: 'error',
       error
     };
-  } finally {
-    await prisma.$disconnect();
   }
 }
