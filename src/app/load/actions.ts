@@ -71,7 +71,10 @@ export async function saveJsonData(data: JsonData): Promise<SaveResult> {
     
     const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
     
-    // 各スコアデータを保存
+    // スコアデータを一括で保存するための配列
+    const scoreDataToCreate = [];
+    
+    // 各スコアデータを配列に追加
     for (const key in items) {
       const {
         worldId,
@@ -90,20 +93,25 @@ export async function saveJsonData(data: JsonData): Promise<SaveResult> {
         const state = typeof item.state === 'number' ? item.state : 0;
         const platform = typeof item.platform === 'number' ? item.platform : 0;
         
-        await prisma.scoreResult.create({
-          data: {
-            worldId,
-            userId: user.id,
-            title: sanitizedTitle,
-            dName: sanitizedDName,
-            musicId: sanitizedMusicId,
-            score: score,
-            tRate: tRate,
-            state: state,
-            platform: platform
-          }
+        scoreDataToCreate.push({
+          worldId,
+          userId: user.id,
+          title: sanitizedTitle,
+          dName: sanitizedDName,
+          musicId: sanitizedMusicId,
+          score: score,
+          tRate: tRate,
+          state: state,
+          platform: platform
         });
       }
+    }
+    
+    // 一括でデータを作成
+    if (scoreDataToCreate.length > 0) {
+      await prisma.scoreResult.createMany({
+        data: scoreDataToCreate
+      });
     }
     
     return { status: 'success' };
