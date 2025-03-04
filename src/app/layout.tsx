@@ -8,6 +8,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default async function RootLayout({
               <h1 className="text-2xl font-bold">Resonark Result Tracker</h1>
             </div>
             {children}
+            <Analytics />
           </SidebarInset>
         </SidebarProvider>
         <Toaster />
