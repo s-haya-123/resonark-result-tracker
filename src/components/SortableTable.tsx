@@ -169,7 +169,7 @@ export default function SortableTable({ scoreResults }: SortableTableProps) {
             onClick={() => toggleSort("dName")}
             className="cursor-pointer hover:bg-gray-100"
           >
-            譜面名{getSortIndicator("dName")}
+            楽曲難易度名{getSortIndicator("dName")}
           </TableHead>
           <TableHead
             onClick={() => toggleSort("score")}
@@ -187,7 +187,7 @@ export default function SortableTable({ scoreResults }: SortableTableProps) {
             onClick={() => toggleSort("state")}
             className="cursor-pointer hover:bg-gray-100"
           >
-            状態{getSortIndicator("state")}
+            楽曲クリアステート{getSortIndicator("state")}
           </TableHead>
           <TableHead
             onClick={() => toggleSort("platform")}
