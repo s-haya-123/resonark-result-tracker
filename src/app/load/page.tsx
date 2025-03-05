@@ -113,6 +113,7 @@ const useTextHandler = ({
   setJsonText,
   setError,
   setSaveStatus,
+  resetSaveStatus,
 }: ReturnType<typeof useJsonData>) => {
   const handleTextChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -132,7 +133,64 @@ const useTextHandler = ({
     [setError, setJsonData, setJsonText, setSaveStatus]
   );
 
-  return { handleTextChange };
+  // クリップボードからのペースト処理
+  const handlePaste = useCallback(async () => {
+    try {
+      resetSaveStatus();
+
+      // Check if clipboard API is available
+      if (!navigator.clipboard) {
+        throw new Error(
+          "お使いのブラウザはクリップボード機能をサポートしていません。"
+        );
+      }
+
+      try {
+        const text = await navigator.clipboard.readText();
+
+        if (!text) {
+          toast.error("クリップボードが空か、テキストデータではありません。");
+          return;
+        }
+
+        setJsonText(text);
+
+        try {
+          const parsedData = JSON.parse(text);
+          setJsonData(parsedData);
+          setError(null);
+          toast.success("クリップボードからデータを貼り付けました");
+        } catch (parseErr) {
+          console.error("JSON parse error:", parseErr);
+          setError("JSONの形式が正しくありません。");
+        }
+      } catch (clipboardErr: unknown) {
+        console.error("Clipboard read error:", clipboardErr);
+
+        // Handle permission errors specifically
+        if (
+          clipboardErr instanceof Error &&
+          clipboardErr.name === "NotAllowedError"
+        ) {
+          setError("クリップボードへのアクセス許可が必要です。");
+          toast.error(
+            "クリップボードへのアクセスが拒否されました。ブラウザの設定を確認してください。"
+          );
+        } else {
+          setError("クリップボードからの読み込みに失敗しました。");
+        }
+      }
+    } catch (err) {
+      console.error("Clipboard error:", err);
+      setError(
+        `クリップボードエラー: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
+  }, [setError, setJsonData, setJsonText, resetSaveStatus]);
+
+  return { handleTextChange, handlePaste };
 };
 
 // 保存処理用のカスタムフック
@@ -175,7 +233,7 @@ const useSaveHandler = (jsonState: ReturnType<typeof useJsonData>) => {
 export default function LoadPage() {
   const jsonState = useJsonData();
   const { handleFileChange } = useFileHandler(jsonState);
-  const { handleTextChange } = useTextHandler(jsonState);
+  const { handleTextChange, handlePaste } = useTextHandler(jsonState);
   const { handleSave } = useSaveHandler(jsonState);
 
   const { jsonData, jsonText, error, fileName, saveStatus } = jsonState;
@@ -218,7 +276,30 @@ export default function LoadPage() {
         <h2 className="text-xl font-semibold mb-3">
           エクスポートされたデータ詳細
         </h2>
-        <div>コピーしたデータを直接以下に貼り付けても読み込めます</div>
+        <div className="flex items-center justify-between mb-2">
+          <div>コピーしたデータを直接以下に貼り付けても読み込めます</div>
+          <Button
+            variant="outline"
+            onClick={handlePaste}
+            className="flex items-center gap-1"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            クリップボードから貼り付け
+          </Button>
+        </div>
         <div className="p-4 bg-gray-50 border border-gray-200 rounded-md overflow-auto">
           <textarea
             className="w-full h-96 font-mono text-sm"
