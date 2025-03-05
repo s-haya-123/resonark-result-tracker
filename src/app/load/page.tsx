@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { FileJsonIcon } from "@/components/icon/FileJsonIcon";
 import { saveJsonData } from "./actions";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 // JSON データ管理用のカスタムフック
 const useJsonData = () => {
@@ -152,7 +153,8 @@ const useSaveHandler = (jsonState: ReturnType<typeof useJsonData>) => {
       const result = await saveJsonData(jsonData);
 
       if (result.status === "success") {
-        setSaveStatus("データが正常に保存されました。");
+        toast.success("データが正常に保存されました。");
+        setSaveStatus(null);
       } else {
         throw new Error("保存に失敗しました。");
       }
@@ -226,7 +228,7 @@ export default function LoadPage() {
           />
         </div>
 
-        <div className="mt-4 flex justify-between items-center">
+        <div className="mt-4">
           <Button
             onClick={handleSave}
             disabled={!jsonData || jsonText.trim() === ""}
@@ -235,9 +237,7 @@ export default function LoadPage() {
           </Button>
 
           {saveStatus && (
-            <div className="p-2 bg-green-50 border border-green-200 rounded-md text-green-600">
-              {saveStatus}
-            </div>
+            <span className="ml-2 text-gray-500">{saveStatus}</span>
           )}
         </div>
       </div>
