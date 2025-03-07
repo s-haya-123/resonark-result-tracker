@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -67,6 +68,7 @@ interface SortableTableProps {
 }
 
 export default function SortableTable({ scoreResults }: SortableTableProps) {
+  const router = useRouter();
   // ソートの状態を管理するstate
   const [sortField, setSortField] = useState<SortableField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
@@ -206,7 +208,11 @@ export default function SortableTable({ scoreResults }: SortableTableProps) {
           </TableRow>
         ) : (
           sortedData.map((result) => (
-            <TableRow key={result.id}>
+            <TableRow
+              key={result.id}
+              className="cursor-pointer hover:bg-gray-50"
+              onClick={() => router.push(`/${result.musicId}/detail`)}
+            >
               <TableCell>{sanitizeHtml(result.title)}</TableCell>
               <TableCell>{sanitizeHtml(result.dName)}</TableCell>
               <TableCell>{result.score.toLocaleString()}</TableCell>
