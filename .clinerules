@@ -1,0 +1,93 @@
+# Resonark Result Tracker - Project Rules
+
+## Project Patterns
+
+### Naming Conventions
+
+- Component files use **PascalCase** (e.g., `SortableTable.tsx`, `HomeContent.tsx`)
+- Utility files use **kebab-case** (e.g., `use-mobile.ts`)
+- Server action files use **camelCase** (e.g., `actions.ts`, `getUserScoreResults.ts`)
+- Page components within each route directory are named `page.tsx`
+
+### Code Organization
+
+- UI components are stored in `src/components/custom-ui/`
+- Only page-specific components are stored within their respective page directories
+- Server actions are defined in `actions.ts` within each route directory
+- Utility functions are stored in `src/lib/`
+- Database schema is defined in `prisma/schema.prisma`
+
+### State Management
+
+- Server-side state is managed through server components and Prisma
+- UI state management uses React’s `useState` and `useEffect` hooks
+- Form states are handled via controlled components
+- No global state management libraries are used
+
+### Component Structure
+
+- Client components are marked explicitly with `"use client"` at the top
+- Props interfaces are defined at the top of each component file
+- Helper functions are defined within the same file before the main component
+
+### Data Flow
+
+- Data fetching is performed by server components
+- Data is passed to client components via props
+- User interactions trigger server actions to mutate data
+- UI components re-render based on updated data
+
+---
+
+## Project Preferences and Guidelines
+
+### Styling
+
+- Tailwind CSS is used exclusively
+- Utility classes are preferred; custom CSS is minimized
+- Common UI components are sourced from the `shadcn/ui` library
+- UI language is Japanese
+
+### Error Handling
+
+- Toast notifications are used for user feedback
+- Inline errors are displayed inline when possible
+- Server errors are logged and returned with clear messages
+- Form validation is conducted on both client and server sides
+
+### Data Formatting
+
+- Scores are formatted with thousand separators (e.g., `9,500`)
+- tRate is displayed with two decimal places and a percentage sign (e.g., `95.00%`)
+- Dates follow Japanese formatting (e.g., `2025/03/10 14:30`)
+- State and platform codes are translated into human-readable text
+
+### Performance Considerations
+
+- Server components handle initial data fetching
+- Utilize client components for interactive elements
+- Large datasets should be paginated or virtualized
+- Database queries must be optimized for performance
+
+---
+
+## JSON Data Import Format
+
+The application expects JSON data in the following format:
+
+```json
+{
+  "version": "1.0.0",
+  "items": {
+    "[worldId][dataType][dataId]": {
+      "id": 1234567890,
+      "title": "Song Title",
+      "dName": "Difficulty Name",
+      "score": 9500,
+      "tRate": 95.0,
+      "state": 230,
+      "platform": 0
+    }
+  }
+}
+```
