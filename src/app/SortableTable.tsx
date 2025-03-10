@@ -141,17 +141,22 @@ export default function SortableTable({ scoreResults }: SortableTableProps) {
     }
   };
 
-  // ソート方向を示す矢印を表示する関数
-  const getSortIndicator = (field: SortableField) => {
-    if (sortField !== field) return null;
+  // ソート方向を示すCSSクラスを返す関数
+  const getSortIndicatorClass = (field: SortableField) => {
+    if (sortField !== field) return "invisible";
 
+    return "visible";
+  };
+
+  // ソート方向を示す矢印を返す関数
+  const getSortIndicatorArrow = () => {
     if (sortDirection === "asc") {
-      return " ↑";
+      return "↑";
     } else if (sortDirection === "desc") {
-      return " ↓";
+      return "↓";
     }
 
-    return null;
+    return "";
   };
 
   // ソート済みのデータを取得
@@ -165,37 +170,67 @@ export default function SortableTable({ scoreResults }: SortableTableProps) {
             onClick={() => toggleSort("title")}
             className="cursor-pointer hover:bg-gray-100"
           >
-            タイトル{getSortIndicator("title")}
+            <div className="flex items-center">
+              <span>タイトル</span>
+              <span className={`ml-1 w-4 ${getSortIndicatorClass("title")}`}>
+                {getSortIndicatorArrow()}
+              </span>
+            </div>
           </TableHead>
           <TableHead
             onClick={() => toggleSort("dName")}
             className="cursor-pointer hover:bg-gray-100"
           >
-            楽曲難易度名{getSortIndicator("dName")}
+            <div className="flex items-center">
+              <span>楽曲難易度名</span>
+              <span className={`ml-1 w-4 ${getSortIndicatorClass("dName")}`}>
+                {getSortIndicatorArrow()}
+              </span>
+            </div>
           </TableHead>
           <TableHead
             onClick={() => toggleSort("score")}
             className="cursor-pointer hover:bg-gray-100"
           >
-            スコア{getSortIndicator("score")}
+            <div className="flex items-center">
+              <span>スコア</span>
+              <span className={`ml-1 w-4 ${getSortIndicatorClass("score")}`}>
+                {getSortIndicatorArrow()}
+              </span>
+            </div>
           </TableHead>
           <TableHead
             onClick={() => toggleSort("tRate")}
             className="cursor-pointer hover:bg-gray-100"
           >
-            tRate{getSortIndicator("tRate")}
+            <div className="flex items-center">
+              <span>tRate</span>
+              <span className={`ml-1 w-4 ${getSortIndicatorClass("tRate")}`}>
+                {getSortIndicatorArrow()}
+              </span>
+            </div>
           </TableHead>
           <TableHead
             onClick={() => toggleSort("state")}
             className="cursor-pointer hover:bg-gray-100"
           >
-            楽曲クリアステート{getSortIndicator("state")}
+            <div className="flex items-center">
+              <span>楽曲クリアステート</span>
+              <span className={`ml-1 w-4 ${getSortIndicatorClass("state")}`}>
+                {getSortIndicatorArrow()}
+              </span>
+            </div>
           </TableHead>
           <TableHead
             onClick={() => toggleSort("platform")}
             className="cursor-pointer hover:bg-gray-100"
           >
-            プラットフォーム{getSortIndicator("platform")}
+            <div className="flex items-center">
+              <span>プラットフォーム</span>
+              <span className={`ml-1 w-4 ${getSortIndicatorClass("platform")}`}>
+                {getSortIndicatorArrow()}
+              </span>
+            </div>
           </TableHead>
         </TableRow>
       </TableHeader>
