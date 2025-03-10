@@ -20,44 +20,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-// 状態を表示用のテキストに変換する関数
-function getStateText(state: number): string {
-  switch (state) {
-    case 0:
-      return "未プレイ";
-    case 100:
-      return "失敗";
-    case 230:
-      return "通常クリア";
-    case 300:
-      return "Full Comboでクリア";
-    case 400:
-      return "All Perfectでクリア";
-    case 500:
-      return "All A-Perfectでクリア";
-    default:
-      return "不明";
-  }
-}
-
-// プラットフォームを表示用のテキストに変換する関数
-function getPlatformText(platform: number): string {
-  switch (platform) {
-    case 0:
-      return "VRChat PCVR";
-    case 1:
-      return "VRChat PCDesktop";
-    case 2:
-      return "VRChat QuestVR";
-    case 3:
-      return "VRChat Mobile";
-    case 4:
-      return "Debug User";
-    default:
-      return "不明";
-  }
-}
+import { getStateText, getPlatformText } from "@/lib/format-utils";
+import UserInfoBadge from "@/components/custom-ui/UserInfoBadge";
 
 interface MusicDetailContentProps {
   user: User | null;
@@ -78,12 +42,7 @@ export default function MusicDetailContent({
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">楽曲詳細</h1>
           <div className="flex items-center gap-4">
-            {user && (
-              <div className="text-sm bg-blue-50 p-2 rounded-md">
-                ログインユーザー:{" "}
-                <span className="font-medium">{sanitizeHtml(user.name)}</span>
-              </div>
-            )}
+            <UserInfoBadge user={user} />
             <Button variant="outline" onClick={() => router.push("/")}>
               戻る
             </Button>
@@ -108,12 +67,7 @@ export default function MusicDetailContent({
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">楽曲詳細</h1>
         <div className="flex items-center gap-4">
-          {user && (
-            <div className="text-sm bg-blue-50 p-2 rounded-md">
-              ログインユーザー:{" "}
-              <span className="font-medium">{sanitizeHtml(user.name)}</span>
-            </div>
-          )}
+          <UserInfoBadge user={user} />
           <Button variant="outline" onClick={() => router.push("/")}>
             戻る
           </Button>
@@ -125,7 +79,7 @@ export default function MusicDetailContent({
           <CardTitle>{sanitizeHtml(musicInfo.title)}</CardTitle>
           <div className="text-sm text-gray-500">
             難易度: {sanitizeHtml(musicInfo.dName)}
-          </div>
+          </div>{" "}
         </CardHeader>
         <CardContent>
           <div className="flex flex-col space-y-10">
