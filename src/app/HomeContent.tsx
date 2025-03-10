@@ -2,7 +2,7 @@
 
 import { ScoreResult, User } from "@prisma/client";
 import { sanitizeHtml } from "@/lib/utils";
-import SortableTable from "@/components/SortableTable";
+import SortableTable from "@/app/SortableTable";
 import { use } from "react";
 
 interface HomeContentProps {
